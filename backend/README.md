@@ -26,7 +26,7 @@ This is additive only. Existing employee rows remain valid; an admin can create 
 python -m pip install -r requirements.txt
 ```
 
-4. Set the database URL and JWT secret. The default URL is `mysql+pymysql://root:password@localhost:3306/college_project`.
+4. Set the database URL and JWT secret. Use `mysql+pymysql://root:YOUR_MYSQL_PASSWORD@localhost:3306/college_project` with your local password.
 
 ```powershell
 $env:DATABASE_URL = "mysql+pymysql://root:your_password@localhost:3306/college_project"

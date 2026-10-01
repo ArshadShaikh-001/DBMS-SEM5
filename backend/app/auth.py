@@ -11,7 +11,9 @@ from .database import get_db
 from .models import Customer, Employee, EmployeeAuth
 
 
-SECRET_KEY = os.getenv("JWT_SECRET", "change-this-development-secret")
+SECRET_KEY = os.getenv("JWT_SECRET") or os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("JWT_SECRET or SECRET_KEY must be configured")
 ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
