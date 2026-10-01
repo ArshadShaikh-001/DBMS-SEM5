@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from decimal import Decimal
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Numeric, String, Table, Column
+from sqlalchemy import Boolean, Computed, Date, DateTime, ForeignKey, Numeric, String, Table, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base
@@ -47,7 +47,7 @@ class Room(Base):
     length: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     breadth: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     height: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
-    area: Mapped[Decimal | None] = mapped_column(Numeric(12, 2))
+    area: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), Computed("length * breadth", persisted=True))
     project: Mapped[Project] = relationship(back_populates="rooms")
     materials: Mapped[list["RoomMaterial"]] = relationship(back_populates="room", cascade="all, delete-orphan")
 
@@ -81,7 +81,10 @@ class Estimate(Base):
     material_cost: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
     labor_cost: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
     other_cost: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=0)
-    total_cost: Mapped[Decimal | None] = mapped_column(Numeric(13, 2))
+    total_cost: Mapped[Decimal | None] = mapped_column(
+        Numeric(13, 2),
+        Computed("material_cost + labor_cost + other_cost", persisted=True),
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     project: Mapped[Project] = relationship(back_populates="estimate")
     payments: Mapped[list["Payment"]] = relationship(back_populates="estimate")

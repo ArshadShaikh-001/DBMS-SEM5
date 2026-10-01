@@ -5,6 +5,7 @@ from ..auth import hash_password, require_roles
 from ..database import get_db
 from ..models import Employee, EmployeeAuth, Project, ProjectEmployee
 from ..schemas import AssignmentCreate, EmployeeCreate, EmployeeOut
+from .projects import visible
 
 router = APIRouter(prefix="/employees", tags=["Employees"])
 
@@ -54,5 +55,10 @@ def assign_employee(project_id: int, data: AssignmentCreate, db: Session = Depen
 
 @router.get("/projects/{project_id}")
 def project_employees(project_id: int, db: Session = Depends(get_db), current=Depends(require_roles("admin", "employee", "customer"))):
+    project = db.get(Project, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    if not visible(project, current):
+        raise HTTPException(status_code=403, detail="Project is not accessible")
     rows = db.query(ProjectEmployee).filter(ProjectEmployee.project_id == project_id).all()
     return [{"emp_id": row.emp_id, "emp_name": row.employee.emp_name, "designation": row.employee.designation, "role_in_project": row.role_in_project, "assigned_date": row.assigned_date} for row in rows]

@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
@@ -24,7 +25,6 @@ class LoginRequest(BaseModel):
 class Token(APIModel):
     access_token: str
     token_type: str
-    role: str
 
 
 class CustomerOut(APIModel):
@@ -51,7 +51,7 @@ class ProjectOut(ProjectCreate, APIModel):
 
 
 class RoomCreate(BaseModel):
-    room_type: str = "Other"
+    room_type: Literal["Bedroom", "Living Room", "Kitchen", "Bathroom", "Dining Room", "Balcony", "Office", "Hall", "Other"] = "Other"
     length: Decimal = Field(gt=0)
     breadth: Decimal = Field(gt=0)
     height: Decimal = Field(gt=0)
@@ -64,7 +64,7 @@ class RoomOut(RoomCreate, APIModel):
 
 
 class MaterialCreate(BaseModel):
-    material_name: str
+    material_name: str = Field(min_length=1, max_length=100)
     brand: str = "Generic"
     unit: str = "piece"
     quantity: int = Field(default=0, ge=0)
@@ -90,7 +90,7 @@ class EstimateOut(EstimateCreate, APIModel):
 
 class PaymentCreate(BaseModel):
     amount: Decimal = Field(gt=0)
-    payment_mode: str
+    payment_mode: Literal["Cash", "UPI", "Card", "Net Banking", "Cheque"]
     transaction_id: str | None = None
 
 
