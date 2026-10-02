@@ -206,4 +206,22 @@ CREATE TABLE Project_Employee (
         ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
+-- =====================================================================
+-- 10. EMPLOYEE_AUTH (additive credentials for employee JWT login)
+--     Existing Employee rows remain valid and can receive credentials
+--     through the backend employee API.
+-- =====================================================================
+CREATE TABLE Employee_Auth (
+    emp_id     INT          NOT NULL,
+    username   VARCHAR(50)  NOT NULL,
+    password   VARCHAR(255) NOT NULL,
+
+    CONSTRAINT pk_employee_auth PRIMARY KEY (emp_id),
+    CONSTRAINT uq_employee_auth_username UNIQUE (username),
+    CONSTRAINT fk_employee_auth_employee FOREIGN KEY (emp_id)
+        REFERENCES Employee (emp_id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 
